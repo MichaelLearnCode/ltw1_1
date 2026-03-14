@@ -1,0 +1,91 @@
+{% extends 'base.html' %} {% from '_components.html' import render_unit_card %}
+{% block content %}
+<div class="w-full">
+  <div
+    class="relative h-[300px] w-full overflow-hidden flex items-center justify-center"
+  >
+    <div
+      class="absolute inset-0 bg-auto bg-cover no-repeat bg-center"
+      style="background-image: url('{{ dv2.image_url if dv2.image_url else url_for('static', filename='images/bg-placeholder.jpg') }}');"
+    ></div>
+    <div class="absolute inset-0 bg-black/50"></div>
+    <h1 class="text-4xl font-bold text-white absolute bottom-10 left-5">
+      {{ dv2.ten_don_vi }}
+    </h1>
+  </div>
+
+  <div class="container mx-auto px-8 py-8 flex flex-col gap-[40px]">
+    <div>
+      {% if dv1 %}
+      <a
+        href="{{ url_for('donvi.donvi1', id=dv1.id) }}"
+        class="text-primary hover:underline inline-flex items-center gap-2"
+      >
+        <i class="ph ph-arrow-left"></i> Quay lại {{ dv1.ten_don_vi }}
+      </a>
+      {% else %}
+      <a
+        href="{{ url_for('donvi.index') }}"
+        class="text-primary hover:underline inline-flex items-center gap-2"
+      >
+        <i class="ph ph-arrow-left"></i> Quay lại danh sách chính
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="grid grid-cols-10 w-full gap-8">
+      <div class="col-span-10 md:col-span-4 md:order-2">
+        <div class="text-gray-600 flex flex-col gap-3">
+          <div class="flex items-start gap-1">
+            <strong class="flex items-center gap-2 flex-shrink-0">
+              <i class="text-lg ph ph-map-pin-line"></i> Địa điểm:
+            </strong>
+            <span>{{ dv2.dia_diem or 'N/A' }}</span>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <strong class="flex items-center gap-2 flex-shrink-0">
+              <i class="text-lg ph ph-browser"></i> Website:
+            </strong>
+            <a
+              href="{{ dv2.website if dv2.website else '#' }}"
+              target="_blank"
+              class="text-primary hover:text-primary-700 break-all"
+            >
+              {{ dv2.website or 'N/A' }}
+            </a>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <strong class="flex items-center gap-2 flex-shrink-0">
+              <i class="text-lg ph ph-envelope"></i> Email:
+            </strong>
+            <a
+              href="mailto:{{ dv2.email }}"
+              class="text-primary hover:underline"
+            >
+              {{ dv2.email or 'N/A' }}
+            </a>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <strong class="flex items-center gap-2 flex-shrink-0">
+              <i class="text-lg ph ph-phone"></i> Điện thoại:
+            </strong>
+            <span>{{ dv2.dien_thoai or 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="col-span-10 md:col-span-6 md:order-1 md:border-r md:pr-10 border-gray-200"
+      >
+        <h3 class="font-bold text-gray-700 text-2xl mb-4">Mô tả chi tiết:</h3>
+        <div class="text-gray-700 leading-relaxed text-lg">
+          {{ dv2.mo_ta or 'Chưa có thông tin mô tả cho đơn vị này.' }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

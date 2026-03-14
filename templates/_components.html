@@ -1,0 +1,6 @@
+{% macro render_unit_card(name, url) %}
+<a href="{{ url }}"
+    class="flex items-center justify-center p-6 hover:bg-primary hover:text-white transition bg-[#dedede] rounded-sm shadow-sm min-h-[100px]">
+    <h3 class="font-bold text-lg text-center leading-tight">{{ name }}</h3>
+</a>
+{% endmacro %}

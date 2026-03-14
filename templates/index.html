@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% from '_components.html' import render_unit_card %}
+
+{% block content %}
+<div class="w-full">
+    <div class="relative h-[300px] w-full overflow-hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-cover no-repeat bg-center"
+            style="background-image: url('{{ url_for('static', filename='images/bg-trang-chu.webp') }}');">
+        </div>
+
+        <div class="absolute inset-0 bg-black/50"></div>
+    </div>
+    <div class="container mx-auto px-8 py-8 flex flex-col gap-[40px]">
+        <div class="flex justify-center w-full">
+            <div class="relative w-[50vw]">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm thông tin"
+                    class="rounded-sm w-full px-4 py-3 focus:outline-none focus:ring-1 focus:ring-blue-500/40 bg-white">
+
+                <div id="searchResults"
+                    class="absolute top-full left-0 z-10 w-full bg-white border border-gray-200 shadow-xl mt-1 rounded hidden overflow-y-auto max-h-[300px]">
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-center">TRƯỜNG/VIỆN</h2>
+        <div class="grid grid-cols-1 h-auto sm:grid-cols-2 2xl:grid-cols-3 gap-4">
+            {% for dv in dvs1 %}
+            {{ render_unit_card(dv.ten_don_vi, url_for('donvi.donvi1', id=dv.id)) }}
+            {% else %}
+            <p class="text-gray-500">Chưa có dữ liệu đơn vị.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    let timeoutId;
+    const handleSearch = (query) => {
+        if (query.length < 2) {
+            searchResults.classList.add('hidden');
+            return;
+        }
+
+        fetch(`/search?q=${encodeURIComponent(query)}`)
+            .then(res => res.json())
+            .then(data => {
+                searchResults.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const link = item.type === 'donvi1'
+                            ? `/donvi1/${item.id}`
+                            : `/donvi2/${item.id}`;
+                        const typeLabel = item.type === 'donvi1' ? 'Cấp 1' : 'Cấp 2';
+
+                        searchResults.innerHTML += `
+                        <a href="${link}" class="block px-4 py-2 hover:bg-gray-100 border-b last:border-0">
+                            <span class="font-semibold text-gray-800">${item.ten_don_vi}</span>
+                            <span class="text-xs ml-2 bg-blue-100 px-2 py-1 rounded text-blue-600">${typeLabel}</span>
+                        </a>
+                    `;
+                    });
+                    searchResults.classList.remove('hidden');
+                } else {
+                    searchResults.innerHTML = '<div class="px-4 py-2 text-gray-500">Không tìm thấy kết quả.</div>';
+                    searchResults.classList.remove('hidden');
+                }
+            });
+    };
+
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(timeoutId);
+        const query = e.target.value;
+        timeoutId = setTimeout(() => handleSearch(query), 500);
+    });
+
+    searchInput.addEventListener('focus', (e) => {
+        const query = e.target.value;
+        if (query.length >= 2) {
+            if (searchResults.innerHTML.trim() !== "") {
+                searchResults.classList.remove('hidden');
+            } else {
+                handleSearch(query);
+            }
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.classList.add('hidden');
+        }
+    });
+</script>
+{% endblock %}

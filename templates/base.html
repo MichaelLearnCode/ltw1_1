@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @layer components {
+        .prose p {
+          @apply mb-4;
+        }
+        .prose ul {
+          @apply list-disc ml-5 mb-4;
+        }
+        .prose h3 {
+          @apply text-xl font-bold mb-2;
+        }
+      }
+      @theme {
+        --font-roboto: "Roboto", ui-sans-serif, system-ui;
+
+        --color-primary-50: #eff6ff;
+        --color-primary-100: #dbeafe;
+        --color-primary-200: #bfdbfe;
+        --color-primary-300: #93c5fd;
+        --color-primary-400: #60a5fa;
+        --color-primary-500: #3b82f6;
+        --color-primary-600: #0065c9;
+        --color-primary-700: #0056ab;
+        --color-primary-800: #00478d;
+        --color-primary-900: #00386f;
+        --color-primary-950: #001d3d;
+
+        --color-primary: var(--color-primary-600);
+      }
+    </style>
+  </head>
+
+  <body
+    class="flex flex-col min-h-screen bg-[#ededed] font-roboto text-gray-800"
+  >
+    {% block navbar %} {% include 'navbar.html' %} {% endblock %}
+    <main class="flex-grow">{% block content %}{% endblock %}</main>
+    {% block footer %} {% include 'footer.html' %} {% endblock %}
+  </body>
+</html>

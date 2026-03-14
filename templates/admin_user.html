@@ -1,0 +1,244 @@
+{% extends 'admin_base.html' %} {% block admin_content %}
+<div class="w-full flex items-center justify-between mb-6">
+  <h2 class="text-xl font-bold text-gray-800 mb-0">
+    Danh sách Tài Khoản Hệ Thống
+  </h2>
+  <button
+    onclick="openUserModal()"
+    class="bg-primary text-white cursor-pointer hover:bg-primary-600 px-4 py-2 rounded transition flex items-center gap-2"
+  >
+    <i class="ph-bold ph-plus"></i> Thêm User
+  </button>
+</div>
+
+<div class="overflow-x-auto bg-white rounded shadow">
+  <table class="w-full text-left border-collapse">
+    <thead>
+      <tr class="bg-gray-200 text-gray-700">
+        <th class="p-3 border">ID</th>
+        <th class="p-3 border">Username</th>
+        <th class="p-3 border">Email</th>
+        <th class="p-3 border">Vai Trò (Role)</th>
+        <th class="p-3 border text-center">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %} {% set is_self = (u.id == user.id) %}
+      <tr class="hover:bg-gray-50">
+        <td class="p-3 border text-sm text-gray-500">{{ u.id }}</td>
+        <td class="p-3 border font-semibold text-gray-800">{{ u.username }}</td>
+        <td class="p-3 border text-sm">{{ u.email or 'N/A' }}</td>
+        <td class="p-3 border">
+          <span
+            class="px-2 py-1 text-xs rounded-full font-medium {% if u.role == 'admin' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}"
+          >
+            {{ u.role | upper }}
+          </span>
+        </td>
+        <td class="p-3 border text-center relative">
+          <div class="inline-block text-left">
+            <button
+              {%
+              if
+              is_self
+              %}
+              disabled
+              {%
+              endif
+              %}
+              {%
+              if
+              not
+              is_self
+              %}
+              onclick="toggleDropdown('user-drop-{{ u.id }}')"
+              {%
+              endif
+              %}
+              class="dropdown-btn p-1 rounded-full w-8 h-8 transition text-gray-600 
+              {{ 'hover:bg-gray-200 cursor-pointer' if not is_self else 'opacity-40 cursor-not-allowed' }}"
+            >
+              <i class="ph-bold ph-dots-three-outline"></i>
+            </button>
+
+            <div
+              id="user-drop-{{ u.id }}"
+              class="hidden absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl z-50"
+            >
+              <button
+                onclick="openUserModal('{{ u.id }}', '{{ u.username }}', '{{ u.email }}', '{{ u.role }}')"
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+              >
+                <i class="ph ph-pencil-simple"></i> Sửa
+              </button>
+              <form
+                action="{{ url_for('admin.delete_user', id=u.id) }}"
+                method="POST"
+                onsubmit="return confirm('Xóa tài khoản này?');"
+              >
+                <button
+                  type="submit"
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                >
+                  <i class="ph ph-trash"></i> Xóa
+                </button>
+              </form>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div
+  id="userModal"
+  class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4"
+>
+  <div
+    class="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200"
+  >
+    <div
+      class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50"
+    >
+      <h3 id="modalTitle" class="text-lg font-bold text-gray-800">
+        Thêm người dùng mới
+      </h3>
+      <button
+        onclick="closeUserModal()"
+        class="text-gray-400 hover:text-gray-600"
+      >
+        <i class="ph-bold ph-x text-xl"></i>
+      </button>
+    </div>
+
+    <form
+      id="userForm"
+      method="POST"
+      action="{{ url_for('admin.create_user') }}"
+      class="p-6 space-y-4"
+    >
+      <input type="hidden" id="user_id" name="user_id" />
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Username</label
+        >
+        <input
+          type="text"
+          name="username"
+          id="modal_username"
+          required
+          class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-primary/20 outline-none"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Email</label
+        >
+        <input
+          type="email"
+          name="email"
+          id="modal_email"
+          class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-primary/20 outline-none"
+        />
+      </div>
+
+      <div id="passwordField">
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Mật khẩu</label
+        >
+        <input
+          type="password"
+          name="password"
+          id="modal_password"
+          class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-primary/20 outline-none"
+          placeholder="Để trống nếu không muốn đổi"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Vai trò</label
+        >
+        <select
+          name="role"
+          id="modal_role"
+          class="w-full px-4 py-2 border rounded bg-white"
+        >
+          <option value="collaborator">COLLABORATOR</option>
+          <option value="admin">ADMIN</option>
+        </select>
+      </div>
+
+      <div class="pt-4 flex justify-end gap-3">
+        <button
+          type="button"
+          onclick="closeUserModal()"
+          class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded font-medium transition"
+        >
+          Hủy
+        </button>
+        <button
+          type="submit"
+          id="submitBtn"
+          class="px-6 py-2 bg-primary text-white rounded font-bold hover:bg-primary-700 transition"
+        >
+          Xác nhận
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function toggleDropdown(id) {
+    document.querySelectorAll('[id^="user-drop-"]').forEach((el) => {
+      if (el.id !== id) el.classList.add("hidden");
+    });
+    document.getElementById(id).classList.toggle("hidden");
+  }
+
+  window.onclick = function (event) {
+    if (!event.target.closest(".dropdown-btn")) {
+      document
+        .querySelectorAll('[id^="user-drop-"]')
+        .forEach((el) => el.classList.add("hidden"));
+    }
+  };
+
+  // LOGIC MODAL
+  const modal = document.getElementById("userModal");
+  const form = document.getElementById("userForm");
+  const modalTitle = document.getElementById("modalTitle");
+  const submitBtn = document.getElementById("submitBtn");
+
+  function openUserModal(id = "", username = "", email = "", role = "user") {
+    modal.classList.remove("hidden");
+    if (id) {
+      modalTitle.innerText = "Cập nhật tài khoản";
+      submitBtn.innerText = "Lưu thay đổi";
+      form.action = "{{ url_for('admin.edit_user') }}";
+      document.getElementById("user_id").value = id;
+      document.getElementById("modal_username").value = username;
+      document.getElementById("modal_email").value = email;
+      document.getElementById("modal_role").value = role;
+      document.getElementById("modal_password").placeholder =
+        "Để trống nếu giữ nguyên mật khẩu";
+    } else {
+      modalTitle.innerText = "Thêm người dùng mới";
+      submitBtn.innerText = "Tạo tài khoản";
+      form.action = "{{ url_for('admin.create_user') }}";
+      form.reset();
+      document.getElementById("user_id").value = "";
+      document.getElementById("modal_password").placeholder = "Nhập mật khẩu";
+    }
+  }
+
+  function closeUserModal() {
+    modal.classList.add("hidden");
+  }
+</script>
+{% endblock %}

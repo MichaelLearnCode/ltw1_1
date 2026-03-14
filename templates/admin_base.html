@@ -1,0 +1,50 @@
+{% extends 'base.html' %} {% block footer %}{% endblock %} {% block content %}
+<div class="flex">
+  <aside
+    class="w-64 bg-primary-800 text-white flex-shrink-0 sticky h-[calc(100vh-64px)] top-[64px]"
+  >
+    <div class="p-6">
+      <h2 class="text-xl font-bold text-gray-200">Bảng Điều Khiển</h2>
+      <p class="text-xs text-gray-400 mt-1">Quyền: {{ user.role }}</p>
+    </div>
+    <nav class="mt-2 flex flex-col space-y-1">
+      <a
+        href="{{ url_for('admin.admin_donvi1') }}"
+        class="px-6 py-3 transition hover:bg-primary-600 
+     {{ 'bg-primary-600 text-white border-r-3 border-white' if request.endpoint == 'admin.admin_donvi1' else 'text-gray-300' }}"
+      >
+        Quản lý Đơn vị cấp 1
+      </a>
+
+      <a
+        href="{{ url_for('admin.admin_donvi2') }}"
+        class="px-6 py-3 transition hover:bg-primary-600 
+     {{ 'bg-primary-600 text-white border-r-3 border-white' if request.endpoint == 'admin.admin_donvi2' else 'text-gray-300' }}"
+      >
+        Quản lý Đơn vị cấp 2
+      </a>
+
+      {% if user.role == 'admin' %}
+      <a
+        href="{{ url_for('admin.admin_user') }}"
+        class="px-6 py-3 transition hover:bg-primary-600 
+     {{ 'bg-primary-600 text-white border-r-3 border-white' if request.endpoint == 'admin.admin_user' else 'text-gray-300' }}"
+      >
+        Quản lý Tài khoản
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+
+  <section class="flex-grow p-8 bg-gray-100">
+    <div class="bg-white rounded shadow p-6">
+      {% block admin_content %}
+      <h1 class="text-2xl font-bold text-gray-800 mb-4">
+        Chào mừng đến với trang Quản Trị
+      </h1>
+      <p class="text-gray-600">Chọn một mục bên trái để bắt đầu quản lý.</p>
+      {% endblock %}
+    </div>
+  </section>
+</div>
+{% endblock %}

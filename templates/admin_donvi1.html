@@ -1,0 +1,97 @@
+{% extends 'admin_base.html' %} {% block admin_content %}
+<div class="w-full flex items-center justify-between mb-4">
+  <h2 class="text-xl font-bold text-gray-800 mb-0">Danh sách Đơn Vị Cấp 1</h2>
+  <a
+    href="{{ url_for('admin.admin_taodonvi') }}"
+    class="bg-primary text-white hover:bg-primary-500 px-4 py-2 rounded transition"
+  >
+    Tạo mới
+  </a>
+</div>
+
+<div class="overflow-x-auto">
+  <table class="w-full text-left border-collapse">
+    <thead>
+      <tr class="bg-gray-200 text-gray-700">
+        <th class="p-3 border">ID</th>
+        <th class="p-3 border">Tên Đơn Vị</th>
+        <th class="p-3 border">Địa Điểm</th>
+        <th class="p-3 border">Điện Thoại</th>
+        <th class="p-3 border text-center">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dv in dvs1 %}
+      <tr class="hover:bg-gray-50">
+        <td class="p-3 border">{{ dv.id }}</td>
+        <td class="p-3 border font-semibold">{{ dv.ten_don_vi }}</td>
+        <td class="p-3 border">{{ dv.dia_diem }}</td>
+        <td class="p-3 border">{{ dv.dien_thoai }}</td>
+
+        <td class="p-3 border text-center relative">
+          <div class="inline-block text-left">
+            <button
+              onclick="toggleDropdown('dropdown-{{ dv.id }}')"
+              class="p-1 dropdown-btn hover:bg-gray-200 rounded-full w-[30px] h-[30px] cursor-pointer transition text-gray-600"
+            >
+              <i class="ph-bold ph-dots-three-outline"></i>
+            </button>
+
+            <div
+              id="dropdown-{{ dv.id }}"
+              class="hidden absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl z-50"
+            >
+              <a
+                href="{{ url_for('admin.edit_donvi1', id=dv.id) }}"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+              >
+                <i class="ph ph-pencil-simple"></i> Sửa
+              </a>
+              <form
+                action="{{ url_for('admin.delete_donvi1', id=dv.id) }}"
+                method="POST"
+                onsubmit="
+                  return confirm('Bạn có chắc chắn muốn xóa đơn vị này không?');
+                "
+              >
+                <button
+                  type="submit"
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                >
+                  <i class="ph ph-trash"></i> Xóa
+                </button>
+              </form>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" class="p-3 border text-center text-gray-500">
+          Chưa có dữ liệu
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function toggleDropdown(id) {
+    document.querySelectorAll('[id^="dropdown-"]').forEach((el) => {
+      if (el.id !== id) el.classList.add("hidden");
+    });
+
+    const dropdown = document.getElementById(id);
+    dropdown.classList.toggle("hidden");
+  }
+
+  window.onclick = function (event) {
+    if (!event.target.closest(".dropdown-btn")) {
+      document.querySelectorAll('[id^="dropdown-"]').forEach((el) => {
+        el.classList.add("hidden");
+      });
+    }
+  };
+</script>
+{% endblock %}
