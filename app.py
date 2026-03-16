@@ -7,8 +7,10 @@ from user import user_bp
 from donvi import donvi_bp
 from admin import admin_bp
 
+import os
+
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "auth_secret_123"
+app.config["SECRET_KEY"] = os.getenv("MY_SECRET_KEY")
 
 init_db()
 
