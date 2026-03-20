@@ -82,7 +82,7 @@
       >
         <h3 class="font-bold text-gray-700 text-2xl mb-4">Mô tả chi tiết:</h3>
         <div class="text-gray-700 leading-relaxed text-lg">
-          {{ dv2.mo_ta or 'Chưa có thông tin mô tả cho đơn vị này.' }}
+          {{ (dv2.mo_ta or 'Chưa có mô tả') | safe }}
         </div>
       </div>
     </div>
